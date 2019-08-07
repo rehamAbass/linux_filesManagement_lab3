@@ -1,0 +1,46 @@
+#include<fcntl.h>
+#include<stdio.h>
+#include<unistd.h>
+
+int main(int argc ,char* argv[] ){ // ./a.out f1.txt f2.txt out.txt
+
+	if(argc != 4){ printf("Invalid"); return 1;}
+	char * f1 = argv[1];
+	char* f2 = argv[2];
+	char * out = argv[3];
+	char ch, Enter ='\n';
+	int flag = 1, rb_1=1 , rb_2=1;
+	int r1 = open(f1 , O_RDONLY);
+	int r2 = open(f2 , O_RDONLY);
+	int w = open(out , O_WRONLY|O_CREAT , 0644); 
+	if(r1 == -1 || r2 == -1 || w == -1){ printf("can't open");return 1;}
+	
+	while(rb_1 >0 || rb_2 > 0){
+
+				if( flag == 1 && rb_1 > 0){ 
+				//file 1 : his turn , and didn't finish yet:
+					ch = 'a';
+					while(ch != '\n'&& rb_1 != 0){
+						rb_1= read(r1,&ch,1);
+						if(rb_1 == 1)  write(w,&ch,1);	
+						}
+					if(rb_2 > 0 )
+						flag=2;
+					}
+					//second file:
+				else if( flag == 2 && rb_2 >0 ){
+				//file 2: his turn , and didn't finish yet:
+					ch = 'a';
+					while(ch != '\n' && rb_2 != 0){
+						rb_2= read(r2,&ch,1);
+						if(rb_2 == 1 )  write(w,&ch,1);				
+						}
+				if(rb_1 > 0)
+					flag = 1;
+						}
+}
+close(r1);
+close(r2);
+close(w);
+return 0;
+}
